@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Data.SQLite;
 
 using testJob.Model;
 
@@ -8,6 +9,7 @@ namespace testJob
 {
     static class Program
     {
+
         private static void Main(string[] args)
         {
             var fileInfo = new FileInfo("data.txt");
