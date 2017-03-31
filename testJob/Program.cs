@@ -17,15 +17,25 @@ namespace testJob
                 return;
             }
             var fileReader = new StreamReader("data.txt");
-            var ordersList = new List<Order>();
             FileReader.Rows[] rowses = FileReader.ReadRowses(fileReader);
             /* Строки с данными считаются с 1.
              * 0-я строка, строка со столбцами
-             */ 
+             */
+            var linesCounter = 0;
             while ( !fileReader.EndOfStream )
             {
-                ordersList.Add(FileReader.ReadOrder(fileReader,rowses));
+                linesCounter++;
+                try
+                {
+                    var order = FileReader.ReadOrder(fileReader, rowses);
+                }
+                catch ( Exception exception )
+                {
+                    Console.WriteLine("Ошибка в строке {0}."+exception.Message,linesCounter);
+                }
+                
             }
+            fileReader.Close();
 
         }
     }
