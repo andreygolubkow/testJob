@@ -51,7 +51,7 @@ namespace testJob.Model
         /// <summary>
         /// Сумма заказа.
         /// </summary>
-        private double Amount
+        public double Amount
         {
             get
             {
