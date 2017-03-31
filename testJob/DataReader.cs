@@ -28,8 +28,7 @@ namespace testJob
         public static Rows[]  ReadRowses(StreamReader fileStreamReader)
         {
             var rowsArray = new Rows[4];
-            string textLine = fileStreamReader.ReadLine();
-            string lowerTextLine = textLine.ToLower();
+            string lowerTextLine = fileStreamReader.ReadLine().ToLower();
             for (int i = 0; i < 4; i++)
             {
                 Enum.TryParse(lowerTextLine.Split('\t')[i], out rowsArray[i]);
@@ -52,7 +51,7 @@ namespace testJob
                 throw new ArgumentException("Ошибка в строке с данными.");
             }
             var order = new Order();
-            for (int i = 0; i < formatRowses.Length; i++)
+            for (var i = 0; i < formatRowses.Length; i++)
             {
                 switch ( formatRowses[i] )
                 {
