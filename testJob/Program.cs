@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Data.SQLite;
+using SQLite;
+using System.Text;
 
 using testJob.Model;
 
@@ -12,43 +13,31 @@ namespace testJob
 
         private static void Main(string[] args)
         {
-            var fileInfo = new FileInfo("data.txt");
-            if ( !fileInfo.Exists )
-            {
-                Console.WriteLine("Ошибка в файле.");
-                return;
-            }
             var fileReader = new StreamReader("data.txt");
-            FileReader.Rows[] rowses = FileReader.ReadRowses(fileReader);
+            string[] rowses = fileReader.ReadLine()?.ToLower().Split('\t');
             /* Строки с данными считаются с 1.
              * 0-я строка, строка со столбцами
              */
-            var linesCounter = 0;
-            var sqlite = new SqliteManager("db.sqlite");
-            string longQuery = $"INSERT INTO [order] (id,dt,product_id,amount) VALUES ";
+            int linesCounter = 0;
             while ( !fileReader.EndOfStream )
             {
                 linesCounter++;
                 try
                 {
-                    Order order = FileReader.ReadOrder(fileReader, rowses);
-                   // if ( linesCounter == 1 )
-                   // {
-                    //    longQuery = longQuery + $"('{order.Id}','{order.Dt}','{order.ProductId}','{order.Amount}')";
-                   // }
-                    //else
-                    //{
-                        longQuery = longQuery = longQuery + $",('{order.Id}','{order.Dt}','{order.ProductId}','{order.Amount}')";
-                   // }
+                    string[] order = FileReader.ReadOrder(fileReader);
+                    commandString.Insert(commandString.Length,
+                                         $"INSERT INTO [order] ({rowses[0]},{rowses[1]},{rowses[2]},{rowses[3]}) VALUES ('{order[0]}','{order[1]}','{order[2]}','{order[3]}');\n");
                 }
                 catch ( Exception exception )
                 {
-                    Console.WriteLine("Ошибка в строке {0}."+exception.Message,linesCounter);
+                    Console.WriteLine("Ошибка в строке {0}." + exception.Message, linesCounter);
                 }
+            }
+            fileReader.Close();
+            using (var db = new SQLiteConnection("db.sqlite",SQLiteOpenFlags.Create, true))
+            {
                 
             }
-            //sqlite.SqlQuery(longQuery+";");
-            fileReader.Close();
 
         }
     }

@@ -25,15 +25,9 @@ namespace testJob
         /// </summary>
         /// <param name="fileStream">Поток с файлом.</param>
         /// <returns>Массив столбцов.</returns>
-        public static Rows[]  ReadRowses(StreamReader fileStreamReader)
+        public static string[]  ReadRowses(StreamReader fileStreamReader)
         {
-            var rowsArray = new Rows[4];
-            string lowerTextLine = fileStreamReader.ReadLine().ToLower();
-            for (int i = 0; i < 4; i++)
-            {
-                Enum.TryParse(lowerTextLine.Split('\t')[i], out rowsArray[i]);
-            }
-            return rowsArray;
+            return fileStreamReader.ReadLine()?.ToLower().Split('\t');
         }
 
         /// <summary>
@@ -42,34 +36,15 @@ namespace testJob
         /// <param name="fileStreamReader">Поток данных.</param>
         /// <param name="formatRowses">Массив содержащий значения перечисления(названия столбцов).</param>
         /// <returns>Объект Order.</returns>
-        public static Order ReadOrder(StreamReader fileStreamReader, Rows[] formatRowses)
+        public static string[] ReadOrder(StreamReader fileStreamReader)
         {
             string textLine = fileStreamReader.ReadLine();
             string[] dataStrings = textLine.Split('\t');
-            if ( dataStrings.Length < formatRowses.Length )
+            if ( dataStrings.Length < 4 )
             {
                 throw new ArgumentException("Ошибка в строке с данными.");
             }
-            var order = new Order();
-            for (var i = 0; i < formatRowses.Length; i++)
-            {
-                switch ( formatRowses[i] )
-                {
-                    case (Rows.Id):
-                        order.Id = Convert.ToInt32(dataStrings[i]);
-                        break;
-                    case (Rows.amount):
-                        order.Amount = Convert.ToDouble(dataStrings[i],CultureInfo.InvariantCulture);
-                        break;
-                    case (Rows.dt):
-                        order.Dt = Convert.ToDateTime(dataStrings[i]);
-                        break;
-                    case (Rows.product_id):
-                        order.ProductId = Convert.ToInt32(dataStrings[i]);
-                        break;
-                }
-            }
-            return order;
+            return dataStrings;
         }
 
     }

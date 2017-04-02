@@ -1,15 +1,21 @@
 ﻿using System;
 
+using SQLite;
+
 namespace testJob.Model
 {
     /// <summary>
     /// Заказ.
     /// </summary>
-    public struct Order
+    public class Order
     {
-        public int Id;
-        public int ProductId;
-        public double Amount;
-        public DateTime Dt;
+        [NotNull]
+        public int id { get; set; }
+        [NotNull]
+        public int product_id { get; set; }
+        [NotNull]
+        public double amount { get; set; }
+        [NotNull]
+        public DateTime dt { get; set; }
     }
 }
