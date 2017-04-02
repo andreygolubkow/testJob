@@ -55,13 +55,13 @@ namespace testJob
 
         private static void CreateTableProduct(SQLiteConnection openedConnection)
         {
-            var command = new SQLiteCommand("CREATE TABLE product (id INTEGER PRIMARYKEY, name TEXT);",openedConnection);
+            var command = new SQLiteCommand("CREATE TABLE `product` (id INTEGER PRIMARYKEY, name TEXT);",openedConnection);
             command.ExecuteNonQuery();
         }
 
         private static void CreateTableOrder(SQLiteConnection openedConnection)
         {
-            var command = new SQLiteCommand("CREATE TABLE order (id INTEGER PRIMARYKEY, dt DATETIME, product_id INTEGER, amount REAL);", openedConnection);
+            var command = new SQLiteCommand("CREATE TABLE `order` (id INTEGER PRIMARYKEY, dt DATETIME, product_id INTEGER, amount REAL);", openedConnection);
             command.ExecuteNonQuery();
         }
 
@@ -102,6 +102,15 @@ namespace testJob
             _connection.Open();
             (new SQLiteCommand(query, _connection)).ExecuteNonQuery();
             _connection.Close();
+        }
+
+        public SQLiteDataReader ReaderSqlQuery(string query)
+        {
+            _connection.Open();
+            var command = new SQLiteCommand(query,_connection);
+            SQLiteDataReader reader = command.ExecuteReader();
+            _connection.Close();
+            return reader;
         }
 
     }

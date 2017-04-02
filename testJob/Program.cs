@@ -24,12 +24,22 @@ namespace testJob
              * 0-я строка, строка со столбцами
              */
             var linesCounter = 0;
+            var sqlite = new SqliteManager("db.sqlite");
+            string longQuery = $"INSERT INTO [order] (id,dt,product_id,amount) VALUES ";
             while ( !fileReader.EndOfStream )
             {
                 linesCounter++;
                 try
                 {
-                    var order = FileReader.ReadOrder(fileReader, rowses);
+                    Order order = FileReader.ReadOrder(fileReader, rowses);
+                   // if ( linesCounter == 1 )
+                   // {
+                    //    longQuery = longQuery + $"('{order.Id}','{order.Dt}','{order.ProductId}','{order.Amount}')";
+                   // }
+                    //else
+                    //{
+                        longQuery = longQuery = longQuery + $",('{order.Id}','{order.Dt}','{order.ProductId}','{order.Amount}')";
+                   // }
                 }
                 catch ( Exception exception )
                 {
@@ -37,6 +47,7 @@ namespace testJob
                 }
                 
             }
+            //sqlite.SqlQuery(longQuery+";");
             fileReader.Close();
 
         }
