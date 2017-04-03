@@ -27,7 +27,7 @@ namespace testJob
         /// <returns>Массив столбцов.</returns>
         public static Rows[]  ReadRowses(StreamReader fileStreamReader)
         {
-            var rowsArray = new Rows[4];
+            Rows[] rowsArray = new Rows[4];
             string lowerTextLine = fileStreamReader.ReadLine().ToLower();
             for (int i = 0; i < 4; i++)
             {
@@ -50,22 +50,23 @@ namespace testJob
             {
                 throw new ArgumentException("Ошибка в строке с данными.");
             }
-            var order = new Order();
-            for (var i = 0; i < formatRowses.Length; i++)
+            Order order = new Order();
+            for (int i = 0; i < formatRowses.Length; i++)
             {
                 switch ( formatRowses[i] )
                 {
                     case (Rows.Id):
-                        order.Id = Convert.ToInt32(dataStrings[i]);
+                        order.id = Convert.ToInt32(dataStrings[i]);
                         break;
                     case (Rows.amount):
-                        order.Amount = Convert.ToDouble(dataStrings[i],CultureInfo.InvariantCulture);
+                        order.amount = Convert.ToDouble(dataStrings[i],CultureInfo.InvariantCulture);
                         break;
                     case (Rows.dt):
-                        order.Dt = Convert.ToDateTime(dataStrings[i]);
+                        DateTime dataTime = Convert.ToDateTime(dataStrings[i]);
+                        order.dt = (int)(dataTime - new DateTime(1970, 1, 1)).TotalSeconds;
                         break;
                     case (Rows.product_id):
-                        order.ProductId = Convert.ToInt32(dataStrings[i]);
+                        order.product_id = Convert.ToInt32(dataStrings[i]);
                         break;
                 }
             }

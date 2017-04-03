@@ -5,11 +5,11 @@ namespace testJob.Model
     /// <summary>
     /// Заказ.
     /// </summary>
-    public struct Order
+    public class Order
     {
-        public int Id;
-        public int ProductId;
-        public double Amount;
-        public DateTime Dt;
+        public int id { get; set; }
+        public int product_id { get; set; }
+        public double amount { get; set; }
+        public int dt { get; set; }//UnixTimestamp
     }
 }

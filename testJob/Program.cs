@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Data.SQLite;
+
+using SQLite;
 
 using testJob.Model;
+
 
 namespace testJob
 {
@@ -23,23 +25,15 @@ namespace testJob
             /* Строки с данными считаются с 1.
              * 0-я строка, строка со столбцами
              */
+             var ordersList = new List<Order>();
+
             var linesCounter = 0;
-            var sqlite = new SqliteManager("db.sqlite");
-            string longQuery = $"INSERT INTO [order] (id,dt,product_id,amount) VALUES ";
             while ( !fileReader.EndOfStream )
             {
                 linesCounter++;
                 try
                 {
-                    Order order = FileReader.ReadOrder(fileReader, rowses);
-                   // if ( linesCounter == 1 )
-                   // {
-                    //    longQuery = longQuery + $"('{order.Id}','{order.Dt}','{order.ProductId}','{order.Amount}')";
-                   // }
-                    //else
-                    //{
-                        longQuery = longQuery = longQuery + $",('{order.Id}','{order.Dt}','{order.ProductId}','{order.Amount}')";
-                   // }
+                    ordersList.Add(FileReader.ReadOrder(fileReader, rowses));
                 }
                 catch ( Exception exception )
                 {
@@ -47,9 +41,19 @@ namespace testJob
                 }
                 
             }
-            //sqlite.SqlQuery(longQuery+";");
             fileReader.Close();
+            //Положили данные в лист, начинаем работать с БД
+            var db = new SQLiteConnection("db.sqlite", true);
+            db.CreateTable<Order>();
+            db.InsertAll(ordersList);
+            //Запросы
+            /*SELECT * FROM [Order] WHERE dt >= strftime('%s',date('now','start of month')) AND dt < strftime('%s',date('now','start of month','+1 month'));
+             */
 
+
+
+
+            db.Dispose();
         }
     }
 }
