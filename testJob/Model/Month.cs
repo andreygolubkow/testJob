@@ -1,26 +1,23 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using SQLite;
 
 namespace testJob.Model
 {
-    /// <summary>
-    /// Продукт.
-    /// </summary>
-    public class Product
+    public class Month
     {
+        [Unique]
         public int id { get; set; }
 
         public string name { get; set; }
 
-        public Product(int id, string name)
+        public Month(int id, string name)
         {
             this.id = id;
             this.name = name;
         }
 
-        public Product()
+        public Month()
         {
+            
         }
-
     }
 }
