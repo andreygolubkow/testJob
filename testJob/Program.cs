@@ -15,63 +15,25 @@ namespace testJob
 
         private static void Main(string[] args)
         {
-            var ordersList = new List<Order>();
+            var db = new SQLiteConnection("db.sqlite", true);
             if ( args.Length > 0 )
             {
                 string fileName = args[0];
-                var fileInfo = new FileInfo(fileName);
-                if ( !fileInfo.Exists )
-                {
-                    Console.WriteLine("Ошибка в файле.");
-                    return;
-                }
-                var fileReader = new StreamReader(fileName);
-                FileReader.Rows[] rowses = FileReader.ReadRowses(fileReader);
+                FileReader.CheckFile(fileName);
+                var readExceptions = new List<Exception>();
+                IEnumerable<Order> ordersList = FileReader.ParseFile(fileName, readExceptions);
                 /* Строки с данными считаются с 1.
                  * 0-я строка, строка со столбцами
                  */
-                var linesCounter = 0;
-                while ( !fileReader.EndOfStream )
+                foreach (Exception ex in readExceptions)
                 {
-                    linesCounter++;
-                    try
-                    {
-                        ordersList.Add(FileReader.ReadOrder(fileReader, rowses));
-                    }
-                    catch ( Exception exception )
-                    {
-                        Console.WriteLine("Ошибка в строке {0}." + exception.Message, linesCounter);
-                    }
-
-                }
-                fileReader.Close();
-            }
-            //Положили данные в лист, начинаем работать с БД
-            var db = new SQLiteConnection("db.sqlite", true);
-            {
-                db.CreateTable<Order>();
-                db.CreateTable<Product>();
-                if ( db.Query<Product>("SELECT * FROM [product]").Count == 0 )
-                {
-                    var products = new List<Product>
-                                             {
-                                                 new Product(1, "A"),
-                                                 new Product(2, "B"),
-                                                 new Product(3, "C"),
-                                                 new Product(4, "D"),
-                                                 new Product(5, "E"),
-                                                 new Product(6, "F"),
-                                                 new Product(7, "G")
-                                             };
-                    db.InsertAll(products);
-                }
-                db.CreateTable<Month>();
-                if ( db.Query<Month>("SELECT * FROM [Month]").Count == 0 )
-                {
-                    db.InsertAll(Month.GetMonthList());
+                    Console.WriteLine(ex.Message);
                 }
                 db.InsertAll(ordersList);
             }
+            //Положили данные в лист, начинаем работать с 
+                
+            
 
             const string query1 = "SELECT [Product].name as `Name`,SUM([Order].amount) as `Sum`,COUNT(*) as `Count` FROM [Order],[Product] WHERE dt >= strftime('%s',date('now','start of month')) AND dt < strftime('%s',date('now','start of month','+1 month')) AND [Order].product_id = [Product].id GROUP BY[Product].name; ";
             const string query21 = "SELECT [Product].name as `name` FROM [Order],[Product] WHERE (dt >= strftime('%s',date('now','start of month')) AND dt < strftime('%s',date('now','start of month','+1 month'))) AND (product_id NOT IN (SELECT product_id FROM [Order] WHERE (dt >= strftime('%s',date('now','start of month','-1 month')) AND dt < strftime('%s',date('now','start of month'))))) AND [Product].id = [Order].product_id GROUP BY [Product].name;";

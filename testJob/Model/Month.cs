@@ -32,6 +32,10 @@ namespace testJob.Model
             name = "";
         }
 
+        /// <summary>
+        /// Список месяцев. От января до декабря.
+        /// </summary>
+        /// <returns>List из 12 месяцев.</returns>
         public static List<Month> GetMonthList()
         {
             return new List<Month>
