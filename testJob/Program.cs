@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
 using SQLite;
 
 using testJob.Model;
-
+using testJob.QueryHelpers;
 
 namespace testJob
 {
@@ -86,21 +87,24 @@ namespace testJob
                 db.InsertAll(months);
             }
             db.InsertAll(ordersList);
-            string query1 =
-                    "SELECT [Product].name as `Продукт`,SUM([Order].amount) as `Сумма`,COUNT(*) as `Кол-во` FROM [Order],[Product] WHERE dt >= strftime('%s',date('now','start of month')) AND dt < strftime('%s',date('now','start of month','+1 month')) AND [Order].product_id = [Product].id GROUP BY[Product].name; ";
-            string query21 =
+
+            var query1 =
+                    "SELECT [Product].name as `Name`,SUM([Order].amount) as `Sum`,COUNT(*) as `Count` FROM [Order],[Product] WHERE dt >= strftime('%s',date('now','start of month')) AND dt < strftime('%s',date('now','start of month','+1 month')) AND [Order].product_id = [Product].id GROUP BY[Product].name; ";
+            var query21 =
                     "SELECT [Product].name as `Продукт` FROM [Order],[Product] WHERE (dt >= strftime('%s',date('now','start of month')) AND dt < strftime('%s',date('now','start of month','+1 month'))) AND (product_id NOT IN (SELECT product_id FROM [Order] WHERE (dt >= strftime('%s',date('now','start of month','-1 month')) AND dt < strftime('%s',date('now','start of month'))))) AND [Product].id = [Order].product_id GROUP BY [Product].name;";
-            string query22 =
+            var query22 =
                     "SELECT [Product].name as `Продукт` FROM [Order],[Product] WHERE (dt >= strftime('%s',date('now','start of month')) AND dt < strftime('%s',date('now','start of month','+1 month'))) AND (product_id NOT IN (SELECT product_id FROM [Order] WHERE (dt >= strftime('%s',date('now','start of month','-1 month')) AND dt < strftime('%s',date('now','start of month'))))) AND [Product].id = [Order].product_id GROUP BY [Product].name UNION SELECT[Product].name as `Продукт` FROM[Order],[Product] WHERE(dt >= strftime('%s', date('now','start of month','-1 month')) AND dt<strftime('%s', date('now','start of month'))) AND(product_id NOT IN (SELECT product_id FROM[Order] WHERE (dt >= strftime('%s', date('now','start of month')) AND dt<strftime('%s', date('now','start of month','+1 month'))))) AND[Product].id = [Order].product_id GROUP BY[Product].name;";
-            string query3 = "SELECT [M].name||strftime(' %Y', date([Order].dt, 'unixepoch')) as `Период`,[Product].name as `Продукт`, [Order].amount as `Сумма`, ROUND([Order].amount/(SELECT SUM([Order].amount) FROM [Order],[Month] WHERE Month.id = strftime('%m', date([Order].dt, 'unixepoch')) AND [Month].id = [M].id GROUP BY strftime('%m', date([Order].dt, 'unixepoch')))*100,0) as `Доля` FROM [Order],[Product],[Month] as [M] WHERE [Product].id = [Order].product_id AND [M].id = strftime('%m', date([Order].dt, 'unixepoch')) GROUP BY[M].name HAVING(Max([Order].amount)) ORDER BY [M].id;";
-            //Запросы
-            /*SELECT * FROM [Order] WHERE dt >= strftime('%s',date('now','start of month')) AND dt < strftime('%s',date('now','start of month','+1 month'));
-             */
-            /*
-             * SELECT * FROM [Order] WHERE (dt >= strftime('%s',date('now','start of month')) AND dt < strftime('%s',date('now','start of month','+1 month'))) AND (product_id NOT IN (SELECT product_id FROM [Order] WHERE (dt >= strftime('%s',date('now','start of month','-1 month')) AND dt < strftime('%s',date('now','start of month')))));
-             */
+            var query3 = "SELECT [M].name||strftime(' %Y', date([Order].dt, 'unixepoch')) as `Период`,[Product].name as `Продукт`, [Order].amount as `Сумма`, ROUND([Order].amount/(SELECT SUM([Order].amount) FROM [Order],[Month] WHERE Month.id = strftime('%m', date([Order].dt, 'unixepoch')) AND [Month].id = [M].id GROUP BY strftime('%m', date([Order].dt, 'unixepoch')))*100,0) as `Доля` FROM [Order],[Product],[Month] as [M] WHERE [Product].id = [Order].product_id AND [M].id = strftime('%m', date([Order].dt, 'unixepoch')) GROUP BY[M].name HAVING(Max([Order].amount)) ORDER BY [M].id;";
 
-
+            List<ProductItem> productItems = db.Query<ProductItem>(query1);
+            Console.WriteLine("Продукт\tСумма\tКоличество");
+            foreach (ProductItem item in productItems)
+            {
+                Console.WriteLine(item.Name+'\t'+Convert.ToString(item.Sum, CultureInfo.InvariantCulture)+'\t'+Convert.ToString(item.Count));
+            }
+#if DEBUG
+            Console.ReadKey();   
+#endif
 
 
             db.Dispose();
