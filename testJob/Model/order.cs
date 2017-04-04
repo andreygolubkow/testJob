@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace testJob.Model
+﻿namespace testJob.Model
 {
     /// <summary>
     /// Заказ.
