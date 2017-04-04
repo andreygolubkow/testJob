@@ -138,6 +138,8 @@ namespace testJob
                 catch (Exception exception)
                 {
                     exceptions.Add(new FormatException($"Ошибка в строке {linesCounter}." + exception.Message));
+                    /* Строки с данными считаются с 1.
+                    * 0-я строка, строка со столбцами */
                 }
             }
             fileReader.Close();

@@ -171,4 +171,5 @@ devenv testJob.sln /Clean
 copy /y sqlite3.dll "bin\Release\"
 copy /y data.tsv "bin\Release\"
 cd bin\Release
+@echo ===========Running Program===========
 program.exe data.tsv
