@@ -1,0 +1,23 @@
+SELECT M.name || strftime(' %Y', date([Order].dt, 'unixepoch') ) AS Period,
+       Product.name AS Product,
+       (SELECT 1) AS Sum,
+       ROUND([Order].amount / (
+                                  SELECT SUM([Order].amount) 
+                                    FROM [Order],
+                                         Month
+                                   WHERE Month.id = strftime('%m', date([Order].dt, 'unixepoch') ) AND 
+                                         Month.id = M.id
+                                   GROUP BY strftime('%m', date([Order].dt, 'unixepoch') ) 
+                              )
+*            100, 0) AS Part
+  FROM [Order],
+       Product,
+       Month AS M
+ WHERE Product.id = [Order].product_id AND 
+       M.id = strftime('%m', date([Order].dt, 'unixepoch') ) 
+       AND
+       Product.id =  (SELECT [m].product_id FROM (
+       SELECT [Order].product_id,SUM([Order].amount) as `maxAmount` FROM [Order] WHERE strftime('%m',date([Order].dt, 'unixepoch')) = M.id  GROUP BY [Order].product_id ORDER BY maxAmount DESC LIMIT 1) AS [m]
+       )
+ GROUP BY M.name 
+ ORDER BY M.id;

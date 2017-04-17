@@ -1,0 +1,6 @@
+BuildAndRunWithData.bat - выполняет сборку проекта, копирование библиотеки sqlite и копирование тестовых данных. После чего происходит запуск приложения.
+BuildRelease.bat - выполняет только сборку проекта.
+BuildReleaseWithSqliteAndData.bat - выполняет сборку проекта, копирование библиотеки sqlite и копирование тестовых данных.
+BuildReleaseWithSqliteDll.bat - выполняет сборку проекта и копирование библиотеки sqlite.
+
+Сборка происходит в {projectPath}\bin\Release.
